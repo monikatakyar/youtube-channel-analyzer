@@ -14,8 +14,11 @@
   --blue: #2563eb;
   --blue-hover: #1d4ed8;
   --green: #15803d;
+  --green-bg: #dcfce7;
   --orange: #b45309;
+  --orange-bg: #fef3c7;
   --red: #b91c1c;
+  --red-bg: #fee2e2;
   --input-bg: #ffffff;
   --input-border: #cbd5e1;
   --scorebox-bg: #f8fafc;
@@ -23,6 +26,7 @@
   --secondary-text: #1d4ed8;
   --meter-bg: #e2e8f0;
   --shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
+  --modal-overlay: rgba(15, 23, 42, 0.55);
 }
 
 [data-theme="dark"] {
@@ -34,8 +38,11 @@
   --blue: #3b82f6;
   --blue-hover: #60a5fa;
   --green: #4ade80;
+  --green-bg: #064e3b;
   --orange: #fbbf24;
+  --orange-bg: #78350f;
   --red: #f87171;
+  --red-bg: #7f1d1d;
   --input-bg: #0b1120;
   --input-border: #2e3d54;
   --scorebox-bg: #0e1726;
@@ -43,6 +50,7 @@
   --secondary-text: #93c5fd;
   --meter-bg: #273549;
   --shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+  --modal-overlay: rgba(0, 0, 0, 0.75);
 }
 
 * { box-sizing: border-box; }
@@ -55,14 +63,14 @@ body {
 }
 main { max-width: 1000px; margin: auto; padding: 16px 20px 40px; }
 
-/* Top Header & Theme Toggle */
+/* Top Header & Actions */
 .top-nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 8px 0 16px;
   border-bottom: 1px solid var(--line);
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 .brand {
   display: flex;
@@ -83,7 +91,12 @@ main { max-width: 1000px; margin: auto; padding: 16px 20px 40px; }
   border-radius: 8px;
   font-size: 0.8rem;
 }
-.theme-btn {
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.nav-btn {
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -100,28 +113,67 @@ main { max-width: 1000px; margin: auto; padding: 16px 20px 40px; }
   transition: all 0.2s ease;
   box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
-.theme-btn:hover {
+.nav-btn:hover {
   background: var(--secondary-bg);
   color: var(--secondary-text);
   border-color: var(--blue);
   transform: translateY(-1px);
 }
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
+  display: inline-block;
+}
+.status-dot.active {
+  background: var(--green);
+  box-shadow: 0 0 6px var(--green);
+}
 
-.hero { padding: 16px 0 12px; }
-.hero h1 { margin: 0 0 8px; font-size: clamp(1.7rem, 4vw, 2.3rem); }
+.hero { padding: 12px 0 10px; }
+.hero h1 { margin: 0 0 6px; font-size: clamp(1.6rem, 3.8vw, 2.2rem); }
 .hero p { margin: 0; color: var(--muted); }
 
 .card {
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: 16px;
-  padding: 20px;
+  padding: 22px;
   margin: 16px 0;
   box-shadow: var(--shadow);
   transition: background 0.2s ease, border-color 0.2s ease;
 }
 
-label { display: block; font-weight: 650; margin: 12px 0 6px; }
+.card-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.badge-free {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--green-bg);
+  color: var(--green);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 14px 0 6px;
+}
+label { font-weight: 650; margin: 0; font-size: 0.95rem; }
+.char-hint { font-size: 0.82rem; color: var(--muted); font-weight: 500; }
+
 input, textarea {
   width: 100%;
   border: 1px solid var(--input-border);
@@ -140,28 +192,61 @@ input:focus, textarea:focus {
   outline: 2px solid var(--blue);
   border-color: var(--blue);
 }
+textarea { min-height: 110px; resize: vertical; }
 
+.url-input-group {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+.url-input-group input { flex: 1; }
+.btn-fetch {
+  margin: 0;
+  white-space: nowrap;
+  background: var(--secondary-bg);
+  color: var(--secondary-text);
+  border: 1px solid var(--line);
+}
+.btn-fetch:hover:not(:disabled) {
+  background: var(--blue);
+  color: #fff;
+}
+
+.actions-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
 button {
   border: 0;
   border-radius: 10px;
-  padding: 12px 18px;
+  padding: 12px 20px;
   font: inherit;
   font-weight: 700;
   cursor: pointer;
   background: var(--blue);
   color: #ffffff;
-  margin-top: 12px;
-  transition: background 0.15s ease, opacity 0.15s ease;
+  transition: background 0.15s ease, opacity 0.15s ease, transform 0.1s ease;
 }
-button:hover:not(:disabled) {
-  background: var(--blue-hover);
-}
+button:hover:not(:disabled) { background: var(--blue-hover); }
+button:active:not(:disabled) { transform: scale(0.99); }
 button:disabled { opacity: .55; cursor: wait; }
-.secondary { background: var(--secondary-bg); color: var(--secondary-text); }
-.status { margin-top: 10px; color: var(--muted); white-space: pre-wrap; font-size: 0.95rem; }
+.btn-secondary {
+  background: var(--secondary-bg);
+  color: var(--secondary-text);
+}
+.btn-secondary:hover:not(:disabled) {
+  background: var(--line);
+  color: var(--text);
+}
+
+.status { margin-top: 12px; color: var(--muted); white-space: pre-wrap; font-size: 0.92rem; }
 .small { font-size: .88rem; color: var(--muted); }
 .hidden { display: none !important; }
 
+/* Scores Grid */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
@@ -186,15 +271,84 @@ button:disabled { opacity: .55; cursor: wait; }
 
 h2 { font-size: 1.25rem; margin: 0 0 12px; }
 h3 { font-size: 1.03rem; margin: 14px 0 6px; }
+
+/* Interactive pills and cards */
+.tag-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0;
+}
 .pill {
-  display: inline-block;
-  padding: 3px 9px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
   border-radius: 99px;
   background: var(--secondary-bg);
   color: var(--secondary-text);
-  font-size: .85rem;
-  font-weight: 700;
+  font-size: .86rem;
+  font-weight: 650;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
 }
+.pill-clickable {
+  cursor: pointer;
+}
+.pill-clickable:hover {
+  border-color: var(--blue);
+  transform: translateY(-1px);
+}
+.pill-count {
+  background: rgba(0,0,0,0.08);
+  padding: 1px 6px;
+  border-radius: 99px;
+  font-size: 0.75rem;
+}
+
+/* Template title cards */
+.template-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+.template-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--scorebox-bg);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+  gap: 12px;
+}
+.template-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.template-tag {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 2px;
+}
+.btn-copy {
+  padding: 6px 12px;
+  font-size: 0.82rem;
+  border-radius: 8px;
+  margin: 0;
+  background: var(--secondary-bg);
+  color: var(--secondary-text);
+  border: 1px solid var(--line);
+}
+.btn-copy:hover {
+  background: var(--blue);
+  color: #fff;
+}
+
 .good { color: var(--green); }
 .warn { color: var(--orange); }
 .bad { color: var(--red); }
@@ -202,116 +356,297 @@ h3 { font-size: 1.03rem; margin: 14px 0 6px; }
 a { color: var(--blue); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-.result-title { font-size: 1.25rem; font-weight: 750; }
+.result-title { font-size: 1.2rem; font-weight: 750; }
 .thumb { max-width: 320px; width: 100%; border-radius: 12px; border: 1px solid var(--line); display: block; margin: 10px 0; }
-.item { padding: 10px 0; border-bottom: 1px solid var(--line); }
-.item:last-child { border-bottom: 0; }
-.item strong { display: block; }
-.two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-@media (max-width: 650px) {
+.two { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 18px; }
+@media (max-width: 720px) {
   main { padding: 12px 14px 32px; }
   .two { grid-template-columns: 1fr; }
   .card { padding: 16px; }
+  .url-input-group { flex-direction: column; }
 }
-ul { padding-left: 22px; margin: 8px 0; }
+ul, ol { padding-left: 22px; margin: 8px 0; }
 li { margin: 6px 0; }
 .foot { font-size: .85rem; color: var(--muted); padding: 8px 0 28px; line-height: 1.6; }
+
+/* API Key Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--modal-overlay);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+.modal-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 24px;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  animation: modalIn 0.2s ease-out;
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.96) translateY(-8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.modal-header h3 { margin: 0; font-size: 1.15rem; }
+.btn-close {
+  background: transparent;
+  border: 0;
+  color: var(--muted);
+  font-size: 1.3rem;
+  padding: 4px 8px;
+  margin: 0;
+  cursor: pointer;
+  border-radius: 6px;
+}
+.btn-close:hover { background: var(--secondary-bg); color: var(--text); }
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}
 </style>
 </head>
 <body>
 <main>
+  <!-- Top Bar -->
   <nav class="top-nav">
     <div class="brand">
       <span class="brand-icon">▶</span>
       <span class="brand-text">YouTube SEO Analyzer</span>
     </div>
-    <button id="themeToggle" class="theme-btn" type="button" aria-label="Toggle theme">
-      <span id="themeIcon">🌙</span>
-      <span id="themeLabel">Dark Mode</span>
-    </button>
+    <div class="nav-actions">
+      <!-- Hidden API Key Trigger (Left of Dark Mode button) -->
+      <button id="apiKeyBtn" class="nav-btn" type="button" aria-haspopup="dialog" title="Configure YouTube Data API Key (Optional)">
+        <span>🔑</span>
+        <span id="apiKeyBtnLabel">API Key</span>
+        <span id="apiKeyStatusDot" class="status-dot"></span>
+      </button>
+
+      <!-- Theme Switcher -->
+      <button id="themeToggle" class="nav-btn" type="button" aria-label="Toggle theme">
+        <span id="themeIcon">🌙</span>
+        <span id="themeLabel">Dark</span>
+      </button>
+    </div>
   </nav>
 
   <header class="hero">
     <h1>YouTube Video SEO Analyzer</h1>
-    <p>Paste one public YouTube video URL to fetch its details and get a practical SEO checklist.</p>
+    <p>Analyze video SEO score, generate title templates, extract keywords, and suggest tags — <strong>100% free without requiring any API key</strong>.</p>
   </header>
 
+  <!-- Input Section -->
   <section class="card">
-    <h2>1. Fetch video details</h2>
-    <label for="apiKey">YouTube Data API v3 key</label>
-    <input id="apiKey" type="password" autocomplete="off" placeholder="Paste your API key here">
-    <p class="small">The key is kept only in this page's current memory and is not saved by this tool. For safety, restrict the key in Google Cloud to YouTube Data API v3 and your website's HTTP referrers.</p>
-    <label for="videoUrl">YouTube video URL</label>
-    <input id="videoUrl" placeholder="https://www.youtube.com/watch?v=..." inputmode="url">
-    <label for="targetKeywords">Optional target keywords (comma separated)</label>
-    <input id="targetKeywords" placeholder="e.g. Google AdSense approval, Blogger tutorial">
-    <button id="fetchBtn" type="button">Fetch &amp; Analyze Video</button>
+    <div class="card-header-flex">
+      <h2>Video Information</h2>
+      <span class="badge-free">⚡ No API key required</span>
+    </div>
+
+    <!-- Target Keywords -->
+    <div class="label-row">
+      <label for="targetKeywords">Target Keywords (optional)</label>
+      <span class="char-hint">Comma separated</span>
+    </div>
+    <input id="targetKeywords" placeholder="e.g. YouTube SEO tutorial, rank video fast">
+
+    <!-- Video Title -->
+    <div class="label-row">
+      <label for="videoTitleInput">Video Title</label>
+      <span id="titleCounter" class="char-hint">0 / 100 characters</span>
+    </div>
+    <input id="videoTitleInput" placeholder="Paste or type your video title here...">
+
+    <!-- Video Description -->
+    <div class="label-row">
+      <label for="videoDescInput">Video Description</label>
+      <span id="descCounter" class="char-hint">0 words · 0 characters</span>
+    </div>
+    <textarea id="videoDescInput" placeholder="Paste or type your video description here..."></textarea>
+
+    <!-- Optional YouTube URL -->
+    <div class="label-row">
+      <label for="videoUrl">YouTube Video URL (optional for thumbnail or auto-fetch)</label>
+      <span class="char-hint">Extracts public thumbnail without API</span>
+    </div>
+    <div class="url-input-group">
+      <input id="videoUrl" placeholder="https://www.youtube.com/watch?v=... or youtu.be/..." inputmode="url">
+      <button id="fetchBtn" class="btn-fetch" type="button" title="Auto-fill details from YouTube using your API key">
+        ⚡ Auto-Fetch (API)
+      </button>
+    </div>
+
+    <div class="actions-row">
+      <button id="analyzeBtn" type="button">Analyze Video SEO</button>
+      <button id="sampleBtn" class="btn-secondary" type="button">Load Sample Video</button>
+    </div>
+
     <div id="status" class="status" role="status"></div>
   </section>
 
+  <!-- Analysis Results -->
   <section id="report" class="hidden">
+    <!-- Summary Header -->
     <section class="card">
-      <h2>Video details</h2>
       <div class="two">
         <div>
-          <div id="videoTitle" class="result-title"></div>
-          <p id="videoMeta" class="small"></p>
-          <p><strong>Video URL:</strong> <a id="watchLink" href="#" target="_blank" rel="noopener">Open on YouTube</a></p>
-          <h3>Description</h3>
-          <p id="videoDescription" style="white-space:pre-wrap;overflow-wrap:anywhere"></p>
-          <h3>Tags returned by YouTube</h3>
-          <p id="videoTags" class="small"></p>
+          <div id="videoTitleDisplay" class="result-title"></div>
+          <p id="videoMetaDisplay" class="small"></p>
+          <p id="watchLinkContainer" class="hidden">
+            <strong>Video Link:</strong> <a id="watchLink" href="#" target="_blank" rel="noopener">Open on YouTube ↗</a>
+          </p>
+          <h3>Description Excerpt</h3>
+          <p id="videoDescriptionDisplay" style="white-space:pre-wrap;overflow-wrap:anywhere;max-height:160px;overflow-y:auto"></p>
         </div>
         <div>
-          <img id="thumbnail" class="thumb" alt="YouTube video thumbnail">
+          <img id="thumbnail" class="thumb hidden" alt="YouTube video thumbnail">
           <p id="thumbMeta" class="small"></p>
         </div>
       </div>
     </section>
 
+    <!-- SEO Checklist Score -->
     <section class="card">
-      <h2>Overall SEO checklist score</h2>
+      <h2>Overall SEO Checklist Score</h2>
       <div class="grid">
-        <div class="scorebox"><div class="small">Overall checklist</div><div class="score" id="overallScore">—</div><div class="meter"><span id="overallMeter"></span></div><div id="overallLabel"></div></div>
-        <div class="scorebox"><div class="small">Title</div><div class="score" id="titleScore">—</div><div class="meter"><span id="titleMeter"></span></div><div id="titleSummary"></div></div>
-        <div class="scorebox"><div class="small">Description</div><div class="score" id="descScore">—</div><div class="meter"><span id="descMeter"></span></div><div id="descSummary"></div></div>
-        <div class="scorebox"><div class="small">Thumbnail file quality</div><div class="score" id="thumbScore">—</div><div class="meter"><span id="thumbMeter"></span></div><div id="thumbSummary"></div></div>
+        <div class="scorebox">
+          <div class="small">Overall SEO Score</div>
+          <div class="score" id="overallScore">—</div>
+          <div class="meter"><span id="overallMeter"></span></div>
+          <div id="overallLabel" class="small"></div>
+        </div>
+        <div class="scorebox">
+          <div class="small">Title Score</div>
+          <div class="score" id="titleScore">—</div>
+          <div class="meter"><span id="titleMeter"></span></div>
+          <div id="titleSummary" class="small"></div>
+        </div>
+        <div class="scorebox">
+          <div class="small">Description Score</div>
+          <div class="score" id="descScore">—</div>
+          <div class="meter"><span id="descMeter"></span></div>
+          <div id="descSummary" class="small"></div>
+        </div>
+        <div class="scorebox">
+          <div class="small">Thumbnail Review</div>
+          <div class="score" id="thumbScore">—</div>
+          <div class="meter"><span id="thumbMeter"></span></div>
+          <div id="thumbSummary" class="small"></div>
+        </div>
       </div>
-      <p class="small">These are this tool's heuristic checklist scores, not official YouTube scores, search-ranking predictions, or a guarantee of views.</p>
+      <p class="small" style="margin-top:10px">Calculated using YouTube SEO best practices (optimal title length, keyword placement, search intent, and description formatting).</p>
     </section>
 
+    <!-- Feature: Title Ideas Generator Using Templates (No API required) -->
     <section class="card">
-      <h2>Title review</h2>
-      <div id="titleFacts"></div>
-      <h3>Recommended changes</h3><ul id="titleAdvice"></ul>
-      <h3>Example improved title</h3><p id="titleExample"></p>
+      <h2>💡 Generate Title Ideas (Template Engine)</h2>
+      <p class="small">High-CTR template variations generated based on your target keywords and topic:</p>
+      <div id="titleTemplates" class="template-list"></div>
     </section>
 
+    <!-- Feature: Extracted Keywords (No API required) -->
     <section class="card">
-      <h2>Description review</h2>
-      <div id="descFacts"></div>
-      <h3>Recommended changes</h3><ul id="descAdvice"></ul>
-      <h3>Description opening suggestion</h3><p id="descExample" style="white-space:pre-wrap"></p>
+      <h2>🔍 Extracted Keywords & Keyphrases</h2>
+      <p class="small">Keywords identified from your title and description text. Click any keyword to append it to your Target Keywords:</p>
+      <div id="extractedKeywords" class="tag-container"></div>
     </section>
 
+    <!-- Feature: Suggested Tags & Hashtags (No API required) -->
     <section class="card">
-      <h2>Thumbnail review</h2>
-      <div id="thumbFacts"></div>
+      <div class="card-header-flex">
+        <h2>🏷️ Suggested Tags &amp; Hashtags</h2>
+        <div style="display:flex;gap:8px">
+          <button id="copyTagsBtn" class="btn-copy" type="button">Copy All Tags</button>
+          <button id="copyHashtagsBtn" class="btn-copy" type="button">Copy Hashtags</button>
+        </div>
+      </div>
+      <p class="small">Ready-to-paste tags formatted within YouTube's 500-character tag box limit:</p>
+      <div id="suggestedTags" class="tag-container"></div>
+      <h3 style="margin-top:14px">Recommended Description Hashtags</h3>
+      <p id="suggestedHashtags" style="font-weight:600;color:var(--blue);letter-spacing:0.02em"></p>
+    </section>
+
+    <!-- Detailed Title Review -->
+    <section class="card">
+      <h2>Title Review &amp; Placement</h2>
+      <div id="titleFacts" class="small" style="margin-bottom:10px"></div>
+      <h3>Recommended Changes</h3>
+      <ul id="titleAdvice"></ul>
+      <h3>Example Improved Title</h3>
+      <p id="titleExample" style="font-weight:600;padding:10px;background:var(--scorebox-bg);border-radius:8px;border:1px solid var(--line)"></p>
+    </section>
+
+    <!-- Detailed Description Review -->
+    <section class="card">
+      <h2>Description Review &amp; Formatting</h2>
+      <div id="descFacts" class="small" style="margin-bottom:10px"></div>
+      <h3>Recommended Changes</h3>
+      <ul id="descAdvice"></ul>
+      <h3>Optimized Opening Suggestion</h3>
+      <p id="descExample" style="white-space:pre-wrap;padding:12px;background:var(--scorebox-bg);border-radius:8px;border:1px solid var(--line);font-size:0.95rem"></p>
+    </section>
+
+    <!-- Thumbnail Review -->
+    <section class="card">
+      <h2>Thumbnail Review</h2>
+      <div id="thumbFacts" class="small" style="margin-bottom:10px"></div>
       <ul id="thumbAdvice"></ul>
-      <p class="small">This check can evaluate image dimensions and aspect ratio. It cannot reliably judge whether thumbnail text is readable, the design is compelling, or viewers will click. Those require visual review and real audience data.</p>
     </section>
 
+    <!-- Priority Action Plan -->
     <section class="card">
-      <h2>Priority action plan</h2>
+      <h2>🎯 Priority Action Plan</h2>
       <ol id="actionPlan"></ol>
     </section>
   </section>
-  <p class="foot">Privacy note: this page sends the API key and video ID to Google's YouTube Data API. Do not share your key. Set API restrictions in Google Cloud Console. Only public video data accessible through the API can be fetched.</p>
+
+  <!-- Modal Dialog for API Key (Hidden at top left of dark mode button) -->
+  <div id="apiModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modalTitle">🔑 YouTube Data API Key</h3>
+        <button id="closeModalBtn" class="btn-close" type="button" aria-label="Close dialog">✕</button>
+      </div>
+      <p class="small" style="margin-top:0">
+        The API key is <strong>completely optional</strong>! All SEO scoring, template generation, tag suggestions, and keyword tools work 100% free without it.
+      </p>
+      <label for="modalApiKey" style="margin-top:12px">YouTube Data API v3 Key</label>
+      <input id="modalApiKey" type="password" autocomplete="off" placeholder="AIzaSy...">
+      <p class="small" style="margin-top:6px">
+        Your key stays securely in your browser and is only used to auto-fetch public video metadata directly from Google's servers.
+      </p>
+      <div class="modal-actions">
+        <button id="clearApiKeyBtn" class="btn-secondary" type="button">Clear Key</button>
+        <button id="saveApiKeyBtn" type="button">Save Key</button>
+      </div>
+    </div>
+  </div>
+
+  <p class="foot">
+    Free SEO Analyzer · Evaluates title length, keyword placement, description structure, tags, and thumbnails according to YouTube guidelines. Live statistics require a Google Cloud YouTube Data API key.
+  </p>
 </main>
+
 <script>
 const $ = id => document.getElementById(id);
 
-// Theme Toggle
+// -------------------------------------------------------------
+// 1. THEME TOGGLE (Dark / Light Mode)
+// -------------------------------------------------------------
 const themeToggle = $("themeToggle");
 const themeIcon = $("themeIcon");
 const themeLabel = $("themeLabel");
@@ -321,10 +656,10 @@ function updateTheme(theme) {
   localStorage.setItem("yt_analyzer_theme", theme);
   if (theme === "dark") {
     themeIcon.textContent = "☀️";
-    themeLabel.textContent = "Light Mode";
+    themeLabel.textContent = "Light";
   } else {
     themeIcon.textContent = "🌙";
-    themeLabel.textContent = "Dark Mode";
+    themeLabel.textContent = "Dark";
   }
 }
 
@@ -340,19 +675,112 @@ themeToggle.addEventListener("click", () => {
   updateTheme(current === "dark" ? "light" : "dark");
 });
 
-let currentVideo = null;
-function videoIdFromUrl(raw) {
-  try {
-    const u = new URL(raw.trim());
-    if (u.hostname === "youtu.be" || u.hostname.endsWith(".youtu.be")) return u.pathname.split("/").filter(Boolean)[0] || null;
-    if (!["youtube.com","www.youtube.com","m.youtube.com","music.youtube.com","youtube-nocookie.com","www.youtube-nocookie.com"].includes(u.hostname)) return null;
-    if (u.pathname === "/watch") return u.searchParams.get("v");
-    const parts = u.pathname.split("/").filter(Boolean);
-    if (["shorts","embed","live"].includes(parts[0])) return parts[1] || null;
-    return null;
-  } catch { return null; }
+// -------------------------------------------------------------
+// 2. API KEY MODAL (Hidden at left of Dark Mode button)
+// -------------------------------------------------------------
+const apiModal = $("apiModal");
+const apiKeyBtn = $("apiKeyBtn");
+const closeModalBtn = $("closeModalBtn");
+const modalApiKey = $("modalApiKey");
+const saveApiKeyBtn = $("saveApiKeyBtn");
+const clearApiKeyBtn = $("clearApiKeyBtn");
+const apiKeyStatusDot = $("apiKeyStatusDot");
+
+function getStoredApiKey() {
+  return localStorage.getItem("yt_api_key") || "";
 }
-function esc(s){return String(s ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+
+function updateApiKeyUi() {
+  const key = getStoredApiKey();
+  if (key) {
+    apiKeyStatusDot.classList.add("active");
+    apiKeyStatusDot.title = "API key configured";
+    modalApiKey.value = key;
+  } else {
+    apiKeyStatusDot.classList.remove("active");
+    apiKeyStatusDot.title = "No API key (Free mode)";
+    modalApiKey.value = "";
+  }
+}
+updateApiKeyUi();
+
+apiKeyBtn.addEventListener("click", () => {
+  modalApiKey.value = getStoredApiKey();
+  apiModal.classList.remove("hidden");
+  modalApiKey.focus();
+});
+
+closeModalBtn.addEventListener("click", () => apiModal.classList.add("hidden"));
+apiModal.addEventListener("click", e => {
+  if (e.target === apiModal) apiModal.classList.add("hidden");
+});
+
+saveApiKeyBtn.addEventListener("click", () => {
+  const val = modalApiKey.value.trim();
+  if (val) {
+    localStorage.setItem("yt_api_key", val);
+  } else {
+    localStorage.removeItem("yt_api_key");
+  }
+  updateApiKeyUi();
+  apiModal.classList.add("hidden");
+  $("status").textContent = val ? "API key saved. Auto-fetch is ready." : "API key cleared. Operating in free no-API mode.";
+});
+
+clearApiKeyBtn.addEventListener("click", () => {
+  localStorage.removeItem("yt_api_key");
+  modalApiKey.value = "";
+  updateApiKeyUi();
+  apiModal.classList.add("hidden");
+  $("status").textContent = "API key cleared. Operating in free no-API mode.";
+});
+
+// -------------------------------------------------------------
+// 3. INPUT COUNTERS & LIVE PREVIEW
+// -------------------------------------------------------------
+const titleInput = $("videoTitleInput");
+const descInput = $("videoDescInput");
+const titleCounter = $("titleCounter");
+const descCounter = $("descCounter");
+
+function updateCounters() {
+  const tLen = titleInput.value.length;
+  titleCounter.textContent = `${tLen} / 100 characters`;
+  titleCounter.style.color = (tLen >= 30 && tLen <= 70) ? "var(--green)" : (tLen > 70 ? "var(--orange)" : "var(--muted)");
+
+  const dVal = descInput.value;
+  const dLen = dVal.length;
+  const dWords = dVal.trim() ? dVal.trim().split(/\s+/).length : 0;
+  descCounter.textContent = `${dWords} words · ${dLen} characters`;
+  descCounter.style.color = (dLen >= 200) ? "var(--green)" : "var(--muted)";
+}
+titleInput.addEventListener("input", updateCounters);
+descInput.addEventListener("input", updateCounters);
+
+// -------------------------------------------------------------
+// 4. URL PARSER & PUBLIC THUMBNAIL (No API needed)
+// -------------------------------------------------------------
+function extractVideoId(raw) {
+  if (!raw) return null;
+  try {
+    const trimmed = raw.trim();
+    if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) return trimmed;
+    const u = new URL(trimmed.startsWith("http") ? trimmed : "https://" + trimmed);
+    if (u.hostname === "youtu.be" || u.hostname.endsWith(".youtu.be")) return u.pathname.split("/").filter(Boolean)[0] || null;
+    if (["youtube.com","www.youtube.com","m.youtube.com","music.youtube.com","youtube-nocookie.com"].includes(u.hostname)) {
+      if (u.pathname === "/watch") return u.searchParams.get("v");
+      const parts = u.pathname.split("/").filter(Boolean);
+      if (["shorts","embed","live"].includes(parts[0])) return parts[1] || null;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+// -------------------------------------------------------------
+// 5. HELPER UTILITIES
+// -------------------------------------------------------------
 function setScore(id, score, summaryId, summary) {
   $(id).textContent = score + "/100";
   $(id.replace("Score","Meter")).style.width = score + "%";
@@ -360,140 +788,419 @@ function setScore(id, score, summaryId, summary) {
 }
 function listInto(id, items) {
   const ul = $(id); ul.replaceChildren();
-  items.forEach(t => { const li = document.createElement("li"); li.textContent = t; ul.appendChild(li); });
+  items.forEach(t => {
+    const li = document.createElement("li");
+    li.textContent = t;
+    ul.appendChild(li);
+  });
 }
 function textInto(id, value) { $(id).textContent = value; }
-function getKeywords(video, custom) {
-  const supplied = custom.split(",").map(x=>x.trim().toLowerCase()).filter(Boolean);
-  if (supplied.length) return [...new Set(supplied)];
-  const tags = (video.tags || []).map(x=>x.toLowerCase()).filter(Boolean);
-  if (tags.length) return [...new Set(tags)].slice(0,12);
-  const stop = new Set(["this","that","with","from","your","have","will","into","about","the","and","for","how","you","are","what","this","video","में","कैसे","और","का","की"]);
-  const words = (video.title + " " + video.description.slice(0,500)).toLowerCase().match(/[a-z0-9][a-z0-9+#.-]{2,}/g) || [];
-  return [...new Set(words.filter(w=>!stop.has(w)))].slice(0,8);
+
+function copyToClipboard(text, btnElement, successMsg = "Copied!") {
+  navigator.clipboard.writeText(text).then(() => {
+    const originalText = btnElement.textContent;
+    btnElement.textContent = successMsg;
+    setTimeout(() => { btnElement.textContent = originalText; }, 1500);
+  });
 }
-function analyze(video, thumbUrl, customKeywords, dims) {
-  const title = video.title || "";
-  const desc = video.description || "";
+
+// -------------------------------------------------------------
+// 6. KEYWORD EXTRACTION & TAG SUGGESTER (100% Free / No API)
+// -------------------------------------------------------------
+const STOP_WORDS = new Set([
+  "this","that","with","from","your","have","will","into","about","the","and","for","how",
+  "you","are","what","video","make","easy","best","good","just","more","like","know","want",
+  "need","when","which","there","their","they","them","then","than","been","were","also",
+  "here","some","very","much","many","only","over","after","most","each","other","where"
+]);
+
+function extractKeywordsFromText(title, desc, customKeywords) {
+  const combined = (title + " " + desc).toLowerCase();
+  const wordTokens = combined.match(/[a-z0-9][a-z0-9+#.-]{2,}/g) || [];
+  
+  // Frequency map
+  const freq = {};
+  wordTokens.forEach(w => {
+    if (!STOP_WORDS.has(w) && isNaN(w)) {
+      freq[w] = (freq[w] || 0) + 1;
+    }
+  });
+
+  // Extract 2-word key phrases
+  for (let i = 0; i < wordTokens.length - 1; i++) {
+    const w1 = wordTokens[i], w2 = wordTokens[i + 1];
+    if (!STOP_WORDS.has(w1) && !STOP_WORDS.has(w2) && isNaN(w1) && isNaN(w2)) {
+      const phrase = `${w1} ${w2}`;
+      freq[phrase] = (freq[phrase] || 0) + 2;
+    }
+  }
+
+  // Include user custom keywords with high weight
+  const custom = customKeywords.split(",").map(x => x.trim().toLowerCase()).filter(Boolean);
+  custom.forEach(k => { freq[k] = (freq[k] || 0) + 10; });
+
+  return Object.entries(freq)
+    .sort((a, b) => b[1] - a[1])
+    .map(entry => ({ keyword: entry[0], count: entry[1] }));
+}
+
+// Generate Catchy Title Ideas via Templates (No API)
+function generateTitleTemplates(mainKeyword, topic) {
+  const kw = mainKeyword || topic || "YouTube SEO";
+  const capKw = kw.split(" ").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+  const year = new Date().getFullYear();
+
+  return [
+    { tag: "How-To / Guide", title: `How to ${capKw} (Step-by-Step for Beginners)` },
+    { tag: "Ultimate Guide", title: `The Ultimate Guide to ${capKw} in ${year}` },
+    { tag: "Listicle", title: `7 ${capKw} Secrets Nobody Tells You (Rank Faster)` },
+    { tag: "Mistakes to Avoid", title: `Stop Doing This! 5 Common ${capKw} Mistakes to Avoid` },
+    { tag: "Curiosity / Test", title: `I Tested ${capKw} for 30 Days: Here Is What Happened` },
+    { tag: "Time-Sensitive", title: `${capKw}: Do This BEFORE It's Too Late (${year})` },
+    { tag: "Case Study / Proof", title: `How I Mastered ${capKw} (Simple Strategy That Works)` },
+    { tag: "Beginner Friendly", title: `${capKw} 101: Everything You Need to Know to Start` }
+  ];
+}
+
+// Generate Tags and Hashtags (No API)
+function generateTagsAndHashtags(title, keywordsList) {
+  const tagsSet = new Set();
+  
+  // Add direct top extracted keywords
+  keywordsList.slice(0, 15).forEach(k => tagsSet.add(k.keyword));
+
+  // Add specific video title variations
+  const titleWords = title.toLowerCase().replace(/[^a-z0-9\s]/g, "").split(/\s+/).filter(w => !STOP_WORDS.has(w));
+  if (titleWords.length >= 2) tagsSet.add(titleWords.slice(0, 3).join(" "));
+  if (titleWords.length >= 4) tagsSet.add(titleWords.slice(0, 4).join(" "));
+
+  const tags = Array.from(tagsSet).slice(0, 20);
+
+  // Generate 4-5 relevant hashtags
+  const hashtags = tags
+    .slice(0, 5)
+    .map(t => "#" + t.replace(/[^a-zA-Z0-9]/g, ""))
+    .filter(h => h.length > 2);
+
+  return { tags, hashtags };
+}
+
+// -------------------------------------------------------------
+// 7. CORE SEO ANALYSIS ENGINE
+// -------------------------------------------------------------
+function runAnalysis(data) {
+  const title = (data.title || "").trim();
+  const desc = (data.description || "").trim();
+  const customKw = (data.customKeywords || "").trim();
   const titleLen = [...title].length;
   const descLen = [...desc].length;
-  const keywords = getKeywords(video, customKeywords);
-  const titleLower = title.toLowerCase(), descLower = desc.toLowerCase();
-  const titleHasKeyword = keywords.some(k=>titleLower.includes(k));
-  const descHasKeyword = keywords.some(k=>descLower.includes(k));
-  const titleWords = title.trim().split(/\s+/).filter(Boolean).length;
-  const titleScore = Math.max(0, Math.min(100,
-    (titleLen >= 30 && titleLen <= 70 ? 35 : titleLen >= 20 && titleLen <= 80 ? 22 : 8) +
-    (titleHasKeyword ? 30 : 0) +
-    (titleWords >= 4 && titleWords <= 12 ? 20 : 8) +
-    (/[|:!?–-]/.test(title) ? 5 : 0) +
-    (titleLen > 0 ? 10 : 0)
-  ));
-  const descScore = Math.max(0, Math.min(100,
-    (descLen >= 200 ? 30 : descLen >= 100 ? 20 : descLen > 0 ? 8 : 0) +
-    (descHasKeyword ? 25 : 0) +
-    (desc.slice(0,200).toLowerCase() && keywords.some(k=>desc.slice(0,200).toLowerCase().includes(k)) ? 15 : 0) +
-    (/(https?:\/\/|www\.)/i.test(desc) ? 5 : 0) +
-    (desc.split(/\s+/).filter(Boolean).length >= 40 ? 15 : 5) +
-    (desc.includes("\n") ? 10 : 0)
-  ));
-  let thumbScore = 0;
+  const titleWords = title ? title.split(/\s+/).filter(Boolean).length : 0;
+  const descWords = desc ? desc.split(/\s+/).filter(Boolean).length : 0;
+
+  // Extract keywords
+  const extracted = extractKeywordsFromText(title, desc, customKw);
+  const primaryKeywords = extracted.slice(0, 8).map(e => e.keyword);
+  const mainKeyword = customKw.split(",")[0]?.trim() || primaryKeywords[0] || "";
+
+  const titleLower = title.toLowerCase();
+  const descLower = desc.toLowerCase();
+  const titleHasKeyword = primaryKeywords.some(k => titleLower.includes(k.toLowerCase()));
+  const descHasKeyword = primaryKeywords.some(k => descLower.includes(k.toLowerCase()));
+  const keywordInOpening = primaryKeywords.some(k => descLower.slice(0, 200).includes(k.toLowerCase()));
+
+  // 1. Title Scoring (0-100)
+  let titleScore = 0;
+  if (titleLen >= 30 && titleLen <= 70) titleScore += 35;
+  else if (titleLen >= 20 && titleLen <= 85) titleScore += 22;
+  else if (titleLen > 0) titleScore += 10;
+
+  if (titleHasKeyword) titleScore += 30;
+  if (titleWords >= 4 && titleWords <= 12) titleScore += 20; else if (titleWords > 0) titleScore += 8;
+  if (/[|:!?–-]/.test(title)) titleScore += 10;
+  if (/\b\d+\b/.test(title) || /\b(how to|guide|best|top|secrets|fast|easy|tutorial)\b/i.test(title)) titleScore += 5;
+  titleScore = Math.min(100, Math.max(0, titleScore));
+
+  // 2. Description Scoring (0-100)
+  let descScore = 0;
+  if (descLen >= 300) descScore += 35;
+  else if (descLen >= 150) descScore += 22;
+  else if (descLen > 0) descScore += 10;
+
+  if (descHasKeyword) descScore += 25;
+  if (keywordInOpening) descScore += 15;
+  if (desc.includes("\n")) descScore += 10;
+  if (/(https?:\/\/|www\.)/i.test(desc)) descScore += 10;
+  if (descWords >= 40) descScore += 5;
+  descScore = Math.min(100, Math.max(0, descScore));
+
+  // 3. Thumbnail Scoring
+  let thumbScore = 50;
+  const dims = data.dims;
   if (dims) {
+    thumbScore = 0;
     const ratio = dims.width / dims.height;
-    thumbScore += dims.width >= 1280 ? 45 : dims.width >= 640 ? 30 : 15;
-    thumbScore += Math.abs(ratio - 16/9) < 0.04 ? 35 : Math.abs(ratio - 16/9) < 0.15 ? 20 : 5;
-    thumbScore += dims.height >= 720 ? 20 : dims.height >= 360 ? 12 : 5;
-  } else thumbScore = 35;
-  thumbScore = Math.min(100, thumbScore);
-  const overall = Math.round(titleScore*.4 + descScore*.4 + thumbScore*.2);
-  const titleAdvice = [];
-  if (titleLen < 30) titleAdvice.push(`Title is ${titleLen} characters. Consider adding useful context; 30–70 characters is a practical guideline, not a YouTube rule.`);
-  if (titleLen > 70) titleAdvice.push(`Title is ${titleLen} characters. Consider shortening it so the main promise is easy to see on small screens.`);
-  if (!titleHasKeyword) titleAdvice.push(`Include one natural target keyword in the title. Suggested keywords: ${keywords.slice(0,4).join(", ") || "add target keywords above"}.`);
-  if (titleWords < 4) titleAdvice.push("Make the title more specific by explaining the task, audience, or result.");
-  if (titleWords > 12) titleAdvice.push("Remove repeated or low-value words and keep the main topic near the beginning.");
-  if (!titleAdvice.length) titleAdvice.push("The title passes the basic length and keyword checks. Make sure it accurately matches what the video teaches and gives viewers a clear reason to watch.");
-  const descAdvice = [];
-  if (descLen < 200) descAdvice.push(`Description is ${descLen} characters. Add a useful summary, steps covered, and relevant links; 200+ characters is a practical checklist target, not a ranking requirement.`);
-  if (!descHasKeyword) descAdvice.push("Naturally include one relevant target keyword in the description, especially in the opening lines.");
-  if (!keywords.some(k=>desc.slice(0,200).toLowerCase().includes(k))) descAdvice.push("Make the first 1–2 sentences explain the video and include the main topic naturally.");
-  if (desc.split(/\s+/).filter(Boolean).length < 40) descAdvice.push("Add meaningful detail about what viewers will learn instead of repeating keywords.");
-  if (!desc.includes("\n")) descAdvice.push("Use short paragraphs or line breaks to make the description easier to scan.");
-  if (!descAdvice.length) descAdvice.push("The description passes the basic length and keyword checks. Verify that links, chapters, and any calls to action are accurate and useful.");
-  const thumbAdvice = [];
-  if (!dims) thumbAdvice.push("Thumbnail dimensions could not be read. Open the image and check that it is a clear, high-resolution 16:9 image.");
-  else {
-    if (dims.width < 1280 || dims.height < 720) thumbAdvice.push(`Current thumbnail is ${dims.width}×${dims.height}. Use a high-resolution 1280×720 image when possible.`);
-    if (Math.abs(dims.width/dims.height - 16/9) >= .04) thumbAdvice.push("Use a 16:9 aspect ratio so the thumbnail fits common YouTube placements.");
-    if (dims.width >= 1280 && dims.height >= 720 && Math.abs(dims.width/dims.height - 16/9) < .04) thumbAdvice.push("Resolution and aspect ratio look good. Manually check that the subject is clear, text is short and readable on a phone, and the design matches the video.");
+    thumbScore += dims.width >= 1280 ? 45 : (dims.width >= 640 ? 30 : 15);
+    thumbScore += Math.abs(ratio - 16/9) < 0.05 ? 35 : (Math.abs(ratio - 16/9) < 0.15 ? 20 : 5);
+    thumbScore += dims.height >= 720 ? 20 : (dims.height >= 360 ? 12 : 5);
+    thumbScore = Math.min(100, thumbScore);
   }
-  const improvedTitle = titleHasKeyword ? title : (keywords[0] ? `${keywords[0]}: ${title}` : title);
-  const firstSentence = desc.split(/[\n.!?]/).map(x=>x.trim()).find(Boolean) || "";
-  const descSuggestion = `${keywords[0] ? keywords[0] + ": " : ""}${firstSentence || "In this video, learn the main topic and follow the steps shown."}${descLen < 200 ? "\n\nAdd 2–4 sentences explaining the steps covered, who the video is for, and useful links or chapters if relevant." : ""}`;
+
+  const overall = Math.round(dims ? (titleScore * 0.4 + descScore * 0.4 + thumbScore * 0.2) : (titleScore * 0.5 + descScore * 0.5));
+
+  // Checklist Advice
+  const titleAdvice = [];
+  if (titleLen < 30) titleAdvice.push(`Title is short (${titleLen} characters). Recommended range is 30–70 characters for clear search ranking and mobile visibility.`);
+  if (titleLen > 70) titleAdvice.push(`Title is long (${titleLen} characters). Consider trimming to under 70 characters so the core hook is not truncated on search results.`);
+  if (!titleHasKeyword) titleAdvice.push(`Include your target keyword (${mainKeyword || "your main topic"}) naturally in your title.`);
+  if (titleWords < 4) titleAdvice.push("Make the title more descriptive by including the audience, specific tool, or benefit.");
+  if (!/[|:!?–-]/.test(title)) titleAdvice.push("Consider adding a punctuation hook or divider (e.g. '|', ':', or parentheses) to boost click-through rate.");
+  if (!titleAdvice.length) titleAdvice.push("Your title meets optimal YouTube length, word count, and keyword visibility criteria!");
+
+  const descAdvice = [];
+  if (descLen < 200) descAdvice.push(`Description is brief (${descLen} characters). Aim for 200+ characters to provide YouTube's algorithm context on your video's topic.`);
+  if (!keywordInOpening) descAdvice.push("Place your primary target keyword in the first 2 sentences (the visible 'above the fold' snippet).");
+  if (!desc.includes("\n")) descAdvice.push("Break your description into short, readable paragraphs using line breaks.");
+  if (!/(https?:\/\/|www\.)/i.test(desc)) descAdvice.push("Add relevant links (e.g. resource link, subscription link, or social media).");
+  if (!descAdvice.length) descAdvice.push("Your description provides great length, keyword presence, and readable structure!");
+
+  const thumbAdvice = [];
+  if (!dims) {
+    thumbAdvice.push("No video URL provided for automatic thumbnail inspection. Ensure your uploaded thumbnail is high-resolution 1280×720 (16:9 ratio).");
+  } else {
+    if (dims.width < 1280 || dims.height < 720) thumbAdvice.push(`Thumbnail resolution is ${dims.width}×${dims.height}. Upload a 1280×720 image for crisp display.`);
+    if (Math.abs(dims.width/dims.height - 16/9) >= 0.05) thumbAdvice.push("Ensure a standard 16:9 aspect ratio so your thumbnail is not letterboxed on mobile.");
+    if (dims.width >= 1280 && dims.height >= 720) thumbAdvice.push("Thumbnail technical resolution and 16:9 aspect ratio are optimal.");
+  }
+
+  // Improved Title Suggestion
+  const improvedTitle = mainKeyword ? (titleLower.includes(mainKeyword.toLowerCase()) ? title : `${mainKeyword.charAt(0).toUpperCase() + mainKeyword.slice(1)}: ${title}`) : title;
+  
+  // Improved Opening Suggestion
+  const firstSentence = desc.split(/[\n.!?]/).map(x => x.trim()).find(Boolean) || "";
+  const descSuggestion = `${mainKeyword ? mainKeyword.charAt(0).toUpperCase() + mainKeyword.slice(1) + " Tutorial: " : ""}${firstSentence || "In this video, discover the key steps and techniques to get the best results."}\n\nKey Highlights:\n- Overview & Essential Steps\n- Tips to Save Time & Avoid Common Mistakes\n- Full Walkthrough\n\n📌 Don't forget to like and subscribe for more content!`;
+
+  // Render to DOM
   $("report").classList.remove("hidden");
-  textInto("videoTitle", title);
-  textInto("videoMeta", `${video.channelTitle || "Channel"} · Published ${video.publishedAt ? new Date(video.publishedAt).toLocaleDateString() : "date unavailable"} · ${video.duration || "duration unavailable"} · ${Number(video.viewCount || 0).toLocaleString()} views`);
-  $("watchLink").href = "https://www.youtube.com/watch?v=" + video.id;
-  textInto("videoDescription", desc || "(No description returned)");
-  textInto("videoTags", (video.tags && video.tags.length) ? video.tags.join(", ") : "No public tags returned. This is common; YouTube does not always expose tags.");
-  $("thumbnail").src = thumbUrl;
-  textInto("thumbMeta", dims ? `Image dimensions: ${dims.width} × ${dims.height} pixels` : "Thumbnail loaded, but dimensions were not available.");
-  setScore("overallScore", overall, "overallLabel", overall >= 80 ? "Strong checklist result" : overall >= 60 ? "Some improvements recommended" : "Needs attention");
-  setScore("titleScore", titleScore, "titleSummary", titleScore >= 80 ? "Good basic signals" : "Review the suggestions below");
-  setScore("descScore", descScore, "descSummary", descScore >= 80 ? "Good basic signals" : "Review the suggestions below");
-  setScore("thumbScore", thumbScore, "thumbSummary", "Technical image check only");
-  textInto("titleFacts", `Title length: ${titleLen} characters · Word count: ${titleWords} · Target keyword detected: ${titleHasKeyword ? "Yes" : "No"} · Keywords checked: ${keywords.join(", ") || "none"}`);
+  textInto("videoTitleDisplay", title || "(No title provided)");
+  textInto("videoMetaDisplay", `${titleWords} words · ${titleLen} characters`);
+  textInto("videoDescriptionDisplay", desc || "(No description provided)");
+
+  if (data.videoId) {
+    $("watchLink").href = `https://www.youtube.com/watch?v=${data.videoId}`;
+    $("watchLinkContainer").classList.remove("hidden");
+  } else {
+    $("watchLinkContainer").classList.add("hidden");
+  }
+
+  if (data.thumbUrl) {
+    const thumbImg = $("thumbnail");
+    thumbImg.src = data.thumbUrl;
+    thumbImg.classList.remove("hidden");
+    textInto("thumbMeta", dims ? `Resolution: ${dims.width} × ${dims.height} px (${(dims.width/dims.height).toFixed(2)}:1)` : "Public thumbnail loaded.");
+  } else {
+    $("thumbnail").classList.add("hidden");
+    textInto("thumbMeta", "No thumbnail URL provided.");
+  }
+
+  // Scores
+  setScore("overallScore", overall, "overallLabel", overall >= 80 ? "✅ Strong Checklist Result" : (overall >= 60 ? "⚠️ Some Improvements Recommended" : "❌ Needs Optimization"));
+  setScore("titleScore", titleScore, "titleSummary", titleScore >= 80 ? "Optimal Title Signals" : "Review Title Suggestions");
+  setScore("descScore", descScore, "descSummary", descScore >= 80 ? "Good Description Context" : "Review Description Suggestions");
+  setScore("thumbScore", thumbScore, "thumbSummary", dims ? (thumbScore >= 80 ? "Optimal 16:9 Image" : "Review Resolution") : "Best Practice Guide");
+
+  // Facts & Advice
+  textInto("titleFacts", `Length: ${titleLen} characters · Word Count: ${titleWords} · Target Keyword Detected: ${titleHasKeyword ? "Yes ✅" : "No ❌"}`);
   listInto("titleAdvice", titleAdvice);
   textInto("titleExample", improvedTitle);
-  textInto("descFacts", `Description length: ${descLen} characters · Approx. words: ${desc.split(/\s+/).filter(Boolean).length} · Keyword in description: ${descHasKeyword ? "Yes" : "No"} · Keyword near beginning: ${keywords.some(k=>desc.slice(0,200).toLowerCase().includes(k)) ? "Yes" : "No"}`);
+
+  textInto("descFacts", `Length: ${descLen} characters · Words: ${descWords} · Keyword in First 200 Chars: ${keywordInOpening ? "Yes ✅" : "No ❌"}`);
   listInto("descAdvice", descAdvice);
   textInto("descExample", descSuggestion);
-  textInto("thumbFacts", dims ? `Technical score: ${thumbScore}/100 · Resolution: ${dims.width}×${dims.height} · Aspect ratio: ${(dims.width/dims.height).toFixed(2)} (YouTube-style thumbnails are usually 16:9).` : "Technical score is provisional because the image dimensions could not be read.");
+
+  textInto("thumbFacts", dims ? `Detected dimensions: ${dims.width}×${dims.height}` : "Manual inspection guidelines below:");
   listInto("thumbAdvice", thumbAdvice);
-  const plan = [...titleAdvice.slice(0,2), ...descAdvice.slice(0,2), ...thumbAdvice.slice(0,1)];
-  listInto("actionPlan", plan.length ? plan : ["Review the title, description, and thumbnail manually for accuracy and viewer clarity."]);
+
+  // Feature: Render Title Templates
+  const templateList = $("titleTemplates");
+  templateList.replaceChildren();
+  const templates = generateTitleTemplates(mainKeyword, title);
+  templates.forEach(t => {
+    const div = document.createElement("div");
+    div.className = "template-item";
+    div.innerHTML = `
+      <div>
+        <span class="template-tag">${t.tag}</span>
+        <span class="template-title">${t.title}</span>
+      </div>
+      <button class="btn-copy" type="button">Copy</button>
+    `;
+    div.querySelector(".btn-copy").addEventListener("click", function() {
+      copyToClipboard(t.title, this);
+    });
+    templateList.appendChild(div);
+  });
+
+  // Feature: Render Extracted Keywords
+  const kwContainer = $("extractedKeywords");
+  kwContainer.replaceChildren();
+  if (extracted.length === 0) {
+    kwContainer.innerHTML = '<span class="small">Enter title and description to extract keywords.</span>';
+  } else {
+    extracted.slice(0, 16).forEach(item => {
+      const pill = document.createElement("span");
+      pill.className = "pill pill-clickable";
+      pill.innerHTML = `<span>+ ${item.keyword}</span> <span class="pill-count">${item.count}</span>`;
+      pill.title = "Click to append to Target Keywords";
+      pill.addEventListener("click", () => {
+        const cur = $("targetKeywords").value.trim();
+        const existing = cur ? cur.split(",").map(x => x.trim().toLowerCase()) : [];
+        if (!existing.includes(item.keyword.toLowerCase())) {
+          $("targetKeywords").value = cur ? `${cur}, ${item.keyword}` : item.keyword;
+          pill.style.borderColor = "var(--green)";
+        }
+      });
+      kwContainer.appendChild(pill);
+    });
+  }
+
+  // Feature: Render Suggested Tags & Hashtags
+  const { tags, hashtags } = generateTagsAndHashtags(title, extracted);
+  const tagsContainer = $("suggestedTags");
+  tagsContainer.replaceChildren();
+  tags.forEach(tag => {
+    const pill = document.createElement("span");
+    pill.className = "pill";
+    pill.textContent = tag;
+    tagsContainer.appendChild(pill);
+  });
+
+  const hashtagsText = hashtags.join(" ");
+  $("suggestedHashtags").textContent = hashtagsText || "#YouTube #Tutorial";
+
+  // Setup copy buttons
+  $("copyTagsBtn").onclick = function() {
+    copyToClipboard(tags.join(", "), this, "Tags Copied!");
+  };
+  $("copyHashtagsBtn").onclick = function() {
+    copyToClipboard(hashtagsText, this, "Hashtags Copied!");
+  };
+
+  // Priority Plan
+  const plan = [...titleAdvice.slice(0, 2), ...descAdvice.slice(0, 2), ...thumbAdvice.slice(0, 1)];
+  listInto("actionPlan", plan);
+
+  // Scroll to report smoothly
+  $("report").scrollIntoView({ behavior: "smooth", block: "start" });
 }
-async function fetchAndAnalyze() {
-  const key = $("apiKey").value.trim();
+
+// -------------------------------------------------------------
+// 8. TRIGGER ACTIONS
+// -------------------------------------------------------------
+// A) Analyze Button (No API required)
+$("analyzeBtn").addEventListener("click", () => {
+  const title = titleInput.value.trim();
+  const desc = descInput.value.trim();
+  const customKeywords = $("targetKeywords").value.trim();
   const rawUrl = $("videoUrl").value.trim();
-  const id = videoIdFromUrl(rawUrl);
-  if (!key) { $("status").textContent = "Please enter your YouTube Data API v3 key first."; return; }
-  if (!id || !/^[a-zA-Z0-9_-]{11}$/.test(id)) { $("status").textContent = "Please enter a valid YouTube video URL (11-character video ID)."; return; }
-  const btn = $("fetchBtn"); btn.disabled = true; $("status").textContent = "Fetching public video details…";
-  $("report").classList.add("hidden");
+  const videoId = extractVideoId(rawUrl);
+
+  if (!title && !desc && !videoId) {
+    $("status").textContent = "Please enter a Video Title, Description, or paste a YouTube URL to analyze.";
+    return;
+  }
+
+  $("status").textContent = "Analyzing SEO signals...";
+
+  // Check if a video URL is provided to load its public thumbnail (No API needed!)
+  if (videoId) {
+    const thumbUrl = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+    const maxresUrl = `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
+    const img = new Image();
+    img.onload = () => {
+      runAnalysis({ title, description: desc, customKeywords, videoId, thumbUrl: maxresUrl, dims: { width: img.naturalWidth, height: img.naturalHeight } });
+      $("status").textContent = "Analysis complete!";
+    };
+    img.onerror = () => {
+      // Fallback to hqdefault
+      const fallbackImg = new Image();
+      fallbackImg.onload = () => {
+        runAnalysis({ title, description: desc, customKeywords, videoId, thumbUrl, dims: { width: fallbackImg.naturalWidth, height: fallbackImg.naturalHeight } });
+        $("status").textContent = "Analysis complete!";
+      };
+      fallbackImg.onerror = () => {
+        runAnalysis({ title, description: desc, customKeywords, videoId, thumbUrl: null, dims: null });
+        $("status").textContent = "Analysis complete!";
+      };
+      fallbackImg.src = thumbUrl;
+    };
+    img.src = maxresUrl;
+  } else {
+    runAnalysis({ title, description: desc, customKeywords, videoId: null, thumbUrl: null, dims: null });
+    $("status").textContent = "Analysis complete!";
+  }
+});
+
+// B) Auto-Fetch from YouTube (When API key is present)
+$("fetchBtn").addEventListener("click", async () => {
+  const key = getStoredApiKey();
+  const rawUrl = $("videoUrl").value.trim();
+  const id = extractVideoId(rawUrl);
+
+  if (!key) {
+    // Open modal to prompt for API key
+    modalApiKey.value = "";
+    apiModal.classList.remove("hidden");
+    $("status").textContent = "Auto-fetch requires a YouTube Data API v3 key. Enter it in the dialog above, or analyze manually below for free.";
+    return;
+  }
+  if (!id) {
+    $("status").textContent = "Please enter a valid YouTube video URL or 11-character video ID.";
+    return;
+  }
+
+  const btn = $("fetchBtn");
+  btn.disabled = true;
+  $("status").textContent = "Fetching video metadata from YouTube API...";
+
   try {
     const endpoint = new URL("https://www.googleapis.com/youtube/v3/videos");
     endpoint.searchParams.set("part", "snippet,statistics,contentDetails");
     endpoint.searchParams.set("id", id);
     endpoint.searchParams.set("key", key);
-    const response = await fetch(endpoint.toString());
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error?.message || `API request failed (${response.status}). Check your API key and YouTube Data API v3 settings.`);
-    if (!data.items || !data.items.length) throw new Error("No public video details returned. Check the URL, video availability, and API access.");
-    const item = data.items[0], s = item.snippet || {}, stats = item.statistics || {}, cd = item.contentDetails || {};
-    const video = {id, title:s.title || "", description:s.description || "", channelTitle:s.channelTitle || "", publishedAt:s.publishedAt || "", tags:s.tags || [], viewCount:stats.viewCount || 0, duration:cd.duration || ""};
-    const thumbs = s.thumbnails || {};
-    const thumb = thumbs.maxres || thumbs.standard || thumbs.high || thumbs.medium || thumbs.default;
-    if (!thumb?.url) throw new Error("Video details were fetched, but YouTube did not return a thumbnail URL.");
-    currentVideo = video;
-    const img = new Image();
-    img.onload = () => {
-      analyze(video, thumb.url, $("targetKeywords").value, {width:img.naturalWidth, height:img.naturalHeight});
-      $("status").textContent = "Video details fetched successfully. Review each recommendation below.";
-      btn.disabled = false;
-    };
-    img.onerror = () => {
-      analyze(video, thumb.url, $("targetKeywords").value, null);
-      $("status").textContent = "Video details fetched. Thumbnail dimensions could not be checked, so its score is provisional.";
-      btn.disabled = false;
-    };
-    img.src = thumb.url;
-  } catch (e) {
-    $("status").textContent = "Could not fetch video details: " + e.message + "\nCheck that YouTube Data API v3 is enabled and your API key is valid and correctly restricted.";
+
+    const res = await fetch(endpoint.toString());
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || `API error (${res.status}). Verify your key and referrers.`);
+    if (!data.items || !data.items.length) throw new Error("Video not found or is private/unlisted.");
+
+    const s = data.items[0].snippet || {};
+    titleInput.value = s.title || "";
+    descInput.value = s.description || "";
+    if (s.tags && s.tags.length && !$("targetKeywords").value.trim()) {
+      $("targetKeywords").value = s.tags.slice(0, 6).join(", ");
+    }
+    updateCounters();
+
+    $("status").textContent = "Video details auto-filled! Click 'Analyze Video SEO' below to run checklist and generator.";
+    btn.disabled = false;
+
+    // Trigger analysis automatically
+    $("analyzeBtn").click();
+  } catch (err) {
+    $("status").textContent = "Fetch failed: " + err.message + "\nTip: You can still paste title and description manually without any API key!";
     btn.disabled = false;
   }
-}
-$("fetchBtn").addEventListener("click", fetchAndAnalyze);
+});
+
+// C) Load Sample Video
+$("sampleBtn").addEventListener("click", () => {
+  titleInput.value = "How to Start a Faceless YouTube Channel in 2026 (Beginner Tutorial)";
+  descInput.value = `In this complete step-by-step tutorial, learn how to create and grow a profitable faceless YouTube channel from scratch in 2026.\n\nWe cover topic research, scriptwriting tools, voiceover software, video editing workflows, and how to optimize your channel for monetization.\n\nKey Timestamps:\n0:00 - Introduction\n1:15 - Finding High-CPM Niches\n4:30 - Script & AI Tools\n8:20 - Thumbnail & SEO Best Practices\n\nMake sure to subscribe for more tutorials!`;
+  $("targetKeywords").value = "faceless youtube channel, youtube automation, video editing";
+  $("videoUrl").value = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+  updateCounters();
+  $("analyzeBtn").click();
+});
 </script>
 </body>
 </html>
