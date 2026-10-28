@@ -1,1 +1,190 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free YouTube Video Analyzer</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f6fb;color:#202438}
+header{background:#171923;color:white;padding:28px 16px;text-align:center}
+header h1{margin:0 0 10px;font-size:27px}
+header p{margin:0;color:#d6d9e5}
+main{max-width:850px;margin:25px auto;padding:0 14px}
+.card{background:white;border-radius:14px;padding:22px;margin-bottom:18px;box-shadow:0 3px 15px #17203a0d}
+h2{font-size:20px;margin-top:0}
+label{display:block;font-weight:bold;margin:15px 0 7px}
+input,textarea{width:100%;padding:12px;border:1px solid #d5d9e4;border-radius:8px;font:inherit}
+textarea{min-height:110px;resize:vertical}
+button{border:0;border-radius:8px;padding:12px 18px;background:#e62117;color:white;font-weight:bold;cursor:pointer;margin-top:14px}
+button.secondary{background:#26334d}
+.result{padding:13px;background:#f4f6fb;border-radius:8px;margin-top:12px;line-height:1.6}
+.good{color:#18794e;font-weight:bold}
+.warn{color:#a15c00;font-weight:bold}
+.thumb{width:100%;max-width:480px;border-radius:10px;margin-top:14px;display:block}
+small{color:#697086}
+footer{text-align:center;padding:25px;color:#697086}
+</style>
+</head>
+<body>
+<header>
+<h1>🎬 YouTube Video Analyzer</h1>
+<p>Free tool to review your YouTube SEO and thumbnail</p>
+</header>
+
+<main>
+<section class="card">
+<h2>1. Enter YouTube Video Details</h2>
+<label for="url">YouTube Video URL</label>
+<input id="url" placeholder="https://www.youtube.com/watch?v=...">
+<button onclick="fetchVideo()">Fetch Public Video Details</button>
+<div id="fetchStatus" class="result" hidden></div>
+
+<label for="title">Video Title</label>
+<input id="title" maxlength="200" placeholder="Enter your video title">
+<small id="titleCount">0 characters</small>
+
+<label for="description">Video Description</label>
+<textarea id="description" placeholder="Paste your video description"></textarea>
+
+<label for="keywords">Main Keywords (comma separated)</label>
+<input id="keywords" placeholder="youtube seo, video tutorial">
+
+<label for="thumbnail">Upload Thumbnail for Preview</label>
+<input id="thumbnail" type="file" accept="image/*">
+<img id="preview" class="thumb" alt="Thumbnail preview" hidden>
+
+<button onclick="analyze()">Analyze My Video</button>
+</section>
+
+<section class="card" id="results" hidden>
+<h2>2. Your SEO Review</h2>
+<div id="report"></div>
+</section>
+
+<section class="card">
+<h2>What this tool checks</h2>
+<p>✓ Title length and keyword placement</p>
+<p>✓ Description completeness and keyword use</p>
+<p>✓ Thumbnail preview</p>
+<p>✓ Actionable improvement suggestions</p>
+<small>SEO checks are guidelines, not a guarantee of YouTube ranking.</small>
+</section>
+</main>
+
+<footer>Free YouTube Analyzer · Version 1.0</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+
+function getVideoId(value){
+  try{
+    const u = new URL(value);
+    if(u.hostname === "youtu.be")
+      return u.pathname.split("/").filter(Boolean)[0] || "";
+    if(["youtube.com","www.youtube.com","m.youtube.com","youtube-nocookie.com","www.youtube-nocookie.com"].includes(u.hostname)){
+      if(u.pathname === "/watch") return u.searchParams.get("v") || "";
+      const parts = u.pathname.split("/").filter(Boolean);
+      if(["shorts","embed","live"].includes(parts[0])) return parts[1] || "";
+    }
+  }catch(e){}
+  return "";
+}
+
+function fetchVideo(){
+  const id = getVideoId($("url").value.trim());
+  const box = $("fetchStatus");
+  box.hidden = false;
+  if(!id || !/^[\w-]{11}$/.test(id)){
+    box.textContent = "Please enter a valid public YouTube video URL.";
+    return;
+  }
+  $("preview").src = "https://img.youtube.com/vi/" + id + "/hqdefault.jpg";
+  $("preview").hidden = false;
+  box.textContent = "Thumbnail loaded if publicly available. To fetch the actual title and description automatically, a YouTube Data API key must be configured in a later step. For now, enter those details manually.";
+}
+
+$("title").addEventListener("input", () => {
+  $("titleCount").textContent = $("title").value.length + " characters";
+});
+
+$("thumbnail").addEventListener("change", e => {
+  const file = e.target.files[0];
+  if(!file) return;
+  if(!file.type.startsWith("image/")) return alert("Please choose an image.");
+  if(file.size > 8 * 1024 * 1024) return alert("Please choose an image under 8 MB.");
+  $("preview").src = URL.createObjectURL(file);
+  $("preview").hidden = false;
+});
+
+function analyze(){
+  const title = $("title").value.trim();
+  const desc = $("description").value.trim();
+  const keys = $("keywords").value.split(",").map(k=>k.trim().toLowerCase()).filter(Boolean);
+  if(!title) return alert("Please enter your video title first.");
+
+  const titleLen = title.length;
+  const titleLength = titleLen >= 30 && titleLen <= 70;
+  const descLength = desc.length >= 200;
+  const titleHasKeyword = keys.some(k=>title.toLowerCase().includes(k));
+  const descHasKeyword = keys.some(k=>desc.toLowerCase().includes(k));
+  const words = title.split(/\s+/).filter(Boolean);
+  let score = 0;
+  if(titleLength) score += 30;
+  if(descLength) score += 25;
+  if(titleHasKeyword) score += 25;
+  if(descHasKeyword) score += 20;
+
+  const items = [
+    ["Title length", titleLength, titleLen + " characters. A practical target is around 30–70 characters; this is only a guideline."],
+    ["Main keyword in title", titleHasKeyword, keys.length ? (titleHasKeyword ? "At least one supplied keyword appears in the title." : "Try including your main topic naturally.") : "Enter keywords to check placement."],
+    ["Description completeness", descLength, descLength ? "Description has at least 200 characters." : "Add useful details about the video; length alone does not determine SEO."],
+    ["Keyword in description", descHasKeyword, keys.length ? (descHasKeyword ? "At least one supplied keyword appears in the description." : "Consider adding relevant keywords naturally.") : "Enter keywords to check placement."]
+  ];
+
+  $("report").innerHTML = "";
+  const scoreBox = document.createElement("div");
+  scoreBox.className = "result";
+  const scoreTitle = document.createElement("strong");
+  scoreTitle.textContent = "Basic checklist score: " + score + "/100";
+  scoreBox.appendChild(scoreTitle);
+  const scoreNote = document.createElement("p");
+  scoreNote.textContent = "This is a simple rule-based score, not an official YouTube SEO score.";
+  scoreBox.appendChild(scoreNote);
+  $("report").appendChild(scoreBox);
+
+  items.forEach(([name,ok,detail])=>{
+    const box = document.createElement("div");
+    box.className = "result";
+    const heading = document.createElement("strong");
+    heading.className = ok ? "good" : "warn";
+    heading.textContent = (ok ? "✓ " : "• ") + name;
+    const text = document.createElement("p");
+    text.textContent = detail;
+    box.append(heading,text);
+    $("report").appendChild(box);
+  });
+
+  const suggestions = document.createElement("div");
+  suggestions.className = "result";
+  const heading = document.createElement("strong");
+  heading.textContent = "Suggested next steps";
+  suggestions.appendChild(heading);
+  const list = document.createElement("ul");
+  [
+    "Make the title specific, accurate and appealing.",
+    "Explain what viewers will learn near the start of the description.",
+    "Use relevant keywords naturally; avoid keyword stuffing.",
+    "Check that the thumbnail is readable at a small size.",
+    "Review YouTube Analytics for actual click-through rate and audience retention."
+  ].forEach(s=>{const li=document.createElement("li");li.textContent=s;list.appendChild(li)});
+  suggestions.appendChild(list);
+  $("report").appendChild(suggestions);
+  $("results").hidden = false;
+  $("results").scrollIntoView({behavior:"smooth"});
+}
+</script>
+</body>
+</html>
+
